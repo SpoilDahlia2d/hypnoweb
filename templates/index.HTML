@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain OUT</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        #title {
+            font-size: 50px;
+            font-weight: bold;
+            color: rgba(255, 0, 0, 0.8);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-shadow: 0 0 15px rgba(255, 0, 0, 1);
+        }
+
+        #click-counter {
+            display: none;
+            font-size: 50px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.9);
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 1);
+        }
+
+        .btn {
+            font-size: 32px;
+            padding: 20px 40px;
+            background-color: #e60000;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(230, 0, 0, 0.7);
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .btn:hover {
+            background-color: #ff1a1a;
+        }
+
+        .flash {
+            animation: flashEffect 0.1s infinite alternate;
+        }
+
+        @keyframes flashEffect {
+            0% { background-color: black; }
+            100% { background-color: white; }
+        }
+
+        .image-box, .word-box {
+            position: absolute;
+            display: inline-block;
+        }
+
+        .image-box img {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .word-box {
+            font-size: 32px;
+            font-weight: bold;
+            color: red;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <video id="background-video" autoplay loop muted>
+        <source src="static/videos/spirale.mp4" type="video/mp4">
+        Il tuo browser non supporta il formato video.
+    </video>
+
+    <div id="title">Bow to DAHLIA</div>
+    <div id="click-counter">CLICK = 0</div>
+    <button class="btn" id="start-btn" onclick="checkImages()">🔥 Click for HYPNO TRAVEL 🔥</button>
+
+    <script>
+        const words = ["SEND", "PUMP", "STARE", "BOW", "RELAPSE"];
+        let images = [];
+        let clickCount = 0;
+        const sound = new Audio("static/sound/sound.mp3");
+        const startButton = document.getElementById("start-btn");
+        const clickCounter = document.getElementById("click-counter");
+        const title = document.getElementById("title");
+
+        function fetchImages() {
+            return fetch("/get-images")
+                .then(response => response.json())
+                .then(data => {
+                    images = data;
+                    return images.length > 0;
+                })
+                .catch(err => {
+                    console.error("Errore nel recupero immagini:", err);
+                    return false;
+                });
+        }
+
+        async function checkImages() {
+            const hasImages = await fetchImages();
+
+            if (!hasImages) {
+                startButton.innerText = "⚠️ Nessuna immagine trovata!";
+                startButton.style.backgroundColor = "#555";
+                return;
+            }
+
+            startMadness();
+        }
+
+        function startMadness() {
+            document.body.classList.add("flash");
+            sound.loop = true;
+            sound.play().catch(err => console.error("Errore nella riproduzione audio:", err));
+            
+            startButton.style.display = "none"; 
+            title.style.display = "none"; 
+            clickCounter.style.display = "block"; 
+
+            document.body.addEventListener("click", () => {
+                clickCount++;
+                clickCounter.innerText = `CLICK = ${clickCount}`;
+                showRandomImage();
+                showRandomWord();
+            });
+        }
+
+        function getRandomPosition(element) {
+            const maxX = window.innerWidth - element.clientWidth - 20;
+            const maxY = window.innerHeight - element.clientHeight - 20;
+            return {
+                x: Math.random() * maxX,
+                y: Math.random() * maxY
+            };
+        }
+
+        function showRandomImage() {
+            if (images.length === 0) return;
+
+            let img = images[Math.floor(Math.random() * images.length)];
+            const imageBox = document.createElement("div");
+            imageBox.classList.add("image-box");
+
+            const imgElement = document.createElement("img");
+            imgElement.src = `static/images/${img}`;
+            imgElement.alt = "Brain OUT Image";
+
+            const { x, y } = getRandomPosition(imgElement);
+            imageBox.style.top = `${y}px`;
+            imageBox.style.left = `${x}px`;
+
+            imageBox.appendChild(imgElement);
+            document.body.appendChild(imageBox);
+
+            setTimeout(() => imageBox.remove(), 1500);
+        }
+
+        function showRandomWord() {
+            let word = words[Math.floor(Math.random() * words.length)];
+
+            const wordBox = document.createElement("div");
+            wordBox.classList.add("word-box");
+            wordBox.textContent = word;
+
+            const { x, y } = getRandomPosition(wordBox);
+            wordBox.style.top = `${y}px`;
+            wordBox.style.left = `${x}px`;
+
+            document.body.appendChild(wordBox);
+
+            setTimeout(() => wordBox.remove(), 1500);
+        }
+
+        fetchImages();
+    </script>
+</body>
+</html>
