@@ -9,13 +9,8 @@ def home():
 
 @app.route("/get-images")
 def get_images():
-    # Percorso della cartella delle immagini
     image_folder = "static/images"
-    
-    # Ottieni tutte le immagini con estensioni valide
     images = [f for f in os.listdir(image_folder) if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif"))]
-    
-    # Restituisci le immagini come JSON
     return jsonify(images)
 
 if __name__ == "__main__":
