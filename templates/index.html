@@ -1,150 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBEY DAHLIA</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: black;
-            font-family: Arial, sans-serif;
-            position: relative;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OBEY DAHLIA</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      font-family: Arial, sans-serif;
+    }
 
-        #background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.2; /* Video più trasparente */
-        }
+    #background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+      opacity: 0.2;
+      filter: blur(1px);
+    }
 
-        .flash-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            animation: flashEffect 0.3s infinite alternate;
-        }
+    .flash-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      animation: flashEffect 0.3s infinite alternate;
+    }
 
-        @keyframes flashEffect {
-            0% { background-color: rgba(255, 0, 255, 0.1); }
-            100% { background-color: rgba(0, 0, 0, 0.6); }
-        }
+    @keyframes flashEffect {
+      0% { background-color: rgba(255, 0, 255, 0.1); }
+      100% { background-color: rgba(0, 0, 0, 0.5); }
+    }
 
-        .image-box, .word-box {
-            position: absolute;
-            z-index: 5;
-        }
+    #intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ff00ff;
+      font-size: 2em;
+      text-align: center;
+      animation: pulse 1s infinite alternate;
+    }
 
-        .image-box img {
-            max-width: 40vw;
-            max-height: 40vh;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
+    #click-button {
+      font-size: 4em;
+      font-weight: bold;
+      color: #ff00ff;
+      text-shadow: 0 0 20px #ff00ff;
+      margin-bottom: 0.5em;
+    }
 
-        .word-box {
-            font-size: 40px;
-            font-weight: bold;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-            animation: pulse 1s infinite alternate;
-        }
+    #click-sub {
+      font-size: 1.5em;
+      text-shadow: 0 0 10px #ff00ff;
+    }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.1); opacity: 0.8; }
-        }
-    </style>
+    .image-box img {
+      max-width: 60vw;
+      max-height: 60vh;
+      object-fit: contain;
+    }
+
+    .image-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .word-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      font-weight: bold;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+      z-index: 11;
+      animation: pulseText 1.5s infinite alternate;
+    }
+
+    @keyframes pulseText {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.1); opacity: 0.8; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Video di sfondo -->
-    <video id="background-video" autoplay loop muted playsinline>
-        <source src="static/videos/spirale.mp4" type="video/mp4">
-    </video>
+  <!-- VIDEO SFONDO -->
+  <video id="background-video" autoplay loop muted playsinline>
+    <source src="static/videos/spirale.mp4" type="video/mp4">
+  </video>
 
-    <!-- Overlay flash ipnotico -->
-    <div class="flash-overlay"></div>
+  <!-- FLASH -->
+  <div class="flash-overlay"></div>
 
-    <script>
-        const words = [
-            "OBEY DAHLIA", "YOU ARE MINE", "SEND EVERYTHING", "HYPNO TRAPPED",
-            "NEVER THINK", "JUST SUBMIT", "DEEPER", "STAY HORNY", "WORSHIP ME"
-        ];
-        let images = [];
-        const sound = new Audio("static/sound/sound.mp3");
-        sound.loop = true;
-        sound.volume = 1.0;
-        sound.play().catch(e => console.log("Audio bloccato finché non c'è interazione"));
+  <!-- INTRO -->
+  <div id="intro">
+    <div id="click-button">CLICK</div>
+    <div id="click-sub">to become obsessed with DAHLIA</div>
+  </div>
 
-        // Recupera le immagini dal backend
-        fetch("/get-images")
-            .then(res => res.json())
-            .then(data => {
-                images = data;
-            });
+  <script>
+    const words = [
+      "OBEY DAHLIA",
+      "YOU ARE MINE",
+      "SEND FOR DAHLIA",
+      "YOU CAN’T RESIST",
+      "I OWN YOU",
+      "JUST CLICK",
+      "GIVE IN",
+      "THINK ONLY OF DAHLIA"
+    ];
 
-        // Posizione casuale
-        function getRandomPosition(element) {
-            const maxX = window.innerWidth - 200;
-            const maxY = window.innerHeight - 100;
-            return {
-                x: Math.random() * maxX,
-                y: Math.random() * maxY
-            };
-        }
+    const sound = new Audio("static/sound/sound.mp3");
+    sound.loop = true;
+    sound.volume = 1.0;
 
-        function showRandomImage() {
-            if (images.length === 0) return;
+    let images = [];
 
-            let img = images[Math.floor(Math.random() * images.length)];
-            const imageBox = document.createElement("div");
-            imageBox.classList.add("image-box");
+    async function fetchImages() {
+      try {
+        const res = await fetch("/get-images");
+        const data = await res.json();
+        images = data;
+      } catch (err) {
+        console.error("Errore caricamento immagini", err);
+      }
+    }
 
-            const imgElement = document.createElement("img");
-            imgElement.src = `static/images/${img}`;
+    function showImage() {
+      if (images.length === 0) return;
+      const img = images[Math.floor(Math.random() * images.length)];
+      const box = document.createElement("div");
+      box.className = "image-box";
 
-            const { x, y } = getRandomPosition(imgElement);
-            imageBox.style.left = `${x}px`;
-            imageBox.style.top = `${y}px`;
+      const imgEl = document.createElement("img");
+      imgEl.src = `static/images/${img}`;
+      box.appendChild(imgEl);
+      document.body.appendChild(box);
 
-            imageBox.appendChild(imgElement);
-            document.body.appendChild(imageBox);
+      setTimeout(() => box.remove(), 2000);
+    }
 
-            setTimeout(() => imageBox.remove(), 2500);
-        }
+    function showWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
+      const box = document.createElement("div");
+      box.className = "word-box";
+      box.innerText = word;
+      document.body.appendChild(box);
+      setTimeout(() => box.remove(), 2000);
+    }
 
-        function showRandomWord() {
-            const word = words[Math.floor(Math.random() * words.length)];
-            const wordBox = document.createElement("div");
-            wordBox.classList.add("word-box");
-            wordBox.textContent = word;
+    function startMadness() {
+      document.getElementById("intro").style.display = "none";
+      sound.play();
+      setInterval(showImage, 2000);
+      setInterval(showWord, 3000);
+    }
 
-            const { x, y } = getRandomPosition(wordBox);
-            wordBox.style.left = `${x}px`;
-            wordBox.style.top = `${y}px`;
-
-            document.body.appendChild(wordBox);
-
-            setTimeout(() => wordBox.remove(), 2000);
-        }
-
-        // Avvio automatico degli effetti
-        setInterval(() => {
-            showRandomImage();
-            showRandomWord();
-        }, 1800);
-    </script>
+    setTimeout(() => {
+      fetchImages();
+      startMadness();
+    }, 3000);
+  </script>
 </body>
 </html>
