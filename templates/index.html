@@ -1,226 +1,208 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brain OUT</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DAHLIA CONTROL</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      height: 100vh;
+      position: relative;
+      color: #ff00ff; /* fucsia */
+    }
 
-        #background-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
+    #background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
 
-        #title {
-            font-size: 50px;
-            font-weight: bold;
-            color: rgba(255, 0, 0, 0.8);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-shadow: 0 0 15px rgba(255, 0, 0, 1);
-        }
+    /* Frasi iniziali */
+    #click-title {
+      font-size: 60px;
+      color: #ff00ff;
+      text-shadow: 0 0 20px #ff00ff;
+      animation: pulse 2s infinite;
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
 
-        #click-counter {
-            display: none;
-            font-size: 50px;
-            font-weight: bold;
-            color: red; /* Cambiato il colore della scritta a rosso */
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-shadow: 0 0 10px rgba(255, 0, 0, 1); /* Aggiunto un'ombra rossa */
-        }
+    #subtitle {
+      font-size: 22px;
+      color: #ff99ff;
+      text-shadow: 0 0 10px #ff00ff;
+      animation: flicker 3s infinite;
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+    }
 
-        .btn {
-            font-size: 32px;
-            padding: 20px 40px;
-            background-color: #e60000;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            box-shadow: 0 4px 15px rgba(230, 0, 0, 0.7);
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
+    #start-btn {
+      font-size: 20px;
+      padding: 15px 30px;
+      background: #ff00ff;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 0 20px #ff00ff;
+      animation: pulse 1.5s infinite;
+    }
 
-        .btn:hover {
-            background-color: #ff1a1a;
-        }
+    @keyframes pulse {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
 
-        .flash {
-            animation: flashEffect 0.1s infinite alternate;
-        }
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.1;
+      }
+    }
 
-        @keyframes flashEffect {
-            0% { background-color: black; }
-            100% { background-color: white; }
-        }
+    .flash {
+      animation: flashEffect 0.1s infinite alternate;
+    }
 
-        .image-box, .word-box {
-            position: absolute;
-            display: inline-block;
-        }
+    @keyframes flashEffect {
+      0% { background-color: black; }
+      100% { background-color: #330033; }
+    }
 
-        .image-box img {
-            max-width: 200px;
-            max-height: 200px;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
+    .image-box img {
+      max-width: 60vw;
+      max-height: 60vh;
+    }
 
-        .word-box {
-            font-size: 32px;
-            font-weight: bold;
-            color: red;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-        }
+    .image-box {
+      position: absolute;
+      z-index: 5;
+    }
 
-        .hidden {
-            display: none;
-        }
-    </style>
+    .word-box {
+      position: absolute;
+      font-size: 38px;
+      font-weight: bold;
+      color: #ff00ff;
+      text-shadow: 0 0 15px #ff00ff;
+      z-index: 6;
+      left: 50%;
+      top: 10%;
+      transform: translateX(-50%);
+      animation: flicker 2s infinite;
+    }
+  </style>
 </head>
 <body>
-    <video id="background-video" autoplay loop muted playsinline>
-        <source src="static/videos/spirale.mp4" type="video/mp4">
-        Il tuo browser non supporta il formato video.
-    </video>
 
-    <div id="title">Bow to DAHLIA</div>
-    <div id="click-counter">CLICK = 0</div>
-    <button class="btn" id="start-btn" onclick="checkImages()">🔥 Click for HYPNO TRAVEL 🔥</button>
+  <video id="background-video" autoplay loop muted playsinline>
+    <source src="static/videos/spirale.mp4" type="video/mp4">
+  </video>
 
-    <script>
-        const words = ["SEND", "SNAP", "SEND", "SNAP", "SEND"];
-        let images = [];
-        let clickCount = 0;
-        const sound = new Audio("static/sound/sound.mp3");
-        sound.volume = 1.0; // Imposta il volume al massimo
-        const startButton = document.getElementById("start-btn");
-        const clickCounter = document.getElementById("click-counter");
-        const title = document.getElementById("title");
+  <div id="click-title">CLICK</div>
+  <div id="subtitle">to become obsessed with DAHLIA</div>
+  <button id="start-btn" onclick="checkImages()">💜 Click to Surrender 💜</button>
 
-        function fetchImages() {
-            return fetch("/get-images")
-                .then(response => response.json())
-                .then(data => {
-                    images = data;
-                    return images.length > 0;
-                })
-                .catch(err => {
-                    console.error("Errore nel recupero immagini:", err);
-                    return false;
-                });
+  <script>
+    const words = [
+      "OBEY", "SUBMIT", "SINK DEEP", "YOU ARE MINE",
+      "DAHLIA CONTROLS YOU", "NO ESCAPE", "JUST PLEASURE"
+    ];
+    let images = [];
+    const sound = new Audio("static/sound/sound.mp3");
+    sound.volume = 1.0;
+    let currentWordBox = null;
+
+    function fetchImages() {
+      return fetch("/get-images")
+        .then(res => res.json())
+        .then(data => {
+          images = data;
+          return images.length > 0;
+        });
+    }
+
+    async function checkImages() {
+      const ok = await fetchImages();
+      if (!ok) {
+        document.getElementById("start-btn").innerText = "⚠️ No images found";
+        return;
+      }
+      startHypnosis();
+    }
+
+    function startHypnosis() {
+      document.body.classList.add("flash");
+
+      document.getElementById("click-title").style.display = "none";
+      document.getElementById("subtitle").style.display = "none";
+      document.getElementById("start-btn").style.display = "none";
+
+      sound.loop = true;
+      sound.play();
+
+      if (navigator.vibrate) navigator.vibrate([100, 200, 100]);
+
+      document.body.addEventListener("click", () => {
+        showImage();
+        showWord();
+      });
+    }
+
+    function showImage() {
+      if (!images.length) return;
+
+      const img = new Image();
+      img.src = `static/images/${images[Math.floor(Math.random() * images.length)]}`;
+      const box = document.createElement("div");
+      box.classList.add("image-box");
+      box.style.left = `${Math.random() * 80}vw`;
+      box.style.top = `${Math.random() * 70 + 10}vh`;
+      box.appendChild(img);
+      document.body.appendChild(box);
+      setTimeout(() => box.remove(), 1500);
+    }
+
+    function showWord() {
+      if (currentWordBox) currentWordBox.remove();
+
+      const word = words[Math.floor(Math.random() * words.length)];
+      const box = document.createElement("div");
+      box.className = "word-box";
+      box.innerText = word;
+      document.body.appendChild(box);
+      currentWordBox = box;
+
+      setTimeout(() => {
+        if (box === currentWordBox) {
+          box.remove();
+          currentWordBox = null;
         }
-
-        async function checkImages() {
-            const hasImages = await fetchImages();
-
-            if (!hasImages) {
-                startButton.innerText = "⚠️ Nessuna immagine trovata!";
-                startButton.style.backgroundColor = "#555";
-                return;
-            }
-
-            startMadness();
-        }
-
-        function startMadness() {
-            document.body.classList.add("flash");
-            sound.loop = true;
-            sound.play().catch(err => console.error("Errore nella riproduzione audio:", err));
-            
-            // Vibrazione (solo su dispositivi mobili)
-            if (navigator.vibrate) {
-                navigator.vibrate([100, 200, 100]); // Vibrazione per 100ms, pausa di 200ms, vibrazione per 100ms
-            }
-
-            startButton.style.display = "none"; 
-            title.style.display = "none"; 
-            clickCounter.style.display = "block"; 
-
-            document.body.addEventListener("click", () => {
-                clickCount++;
-                clickCounter.innerText = `CLICK = ${clickCount}`;
-                showRandomImage();
-                showRandomWord();
-            });
-        }
-
-        function getRandomPosition(element) {
-            const maxX = window.innerWidth - element.clientWidth - 20;
-            const maxY = window.innerHeight - element.clientHeight - 20;
-            return {
-                x: Math.random() * maxX,
-                y: Math.random() * maxY
-            };
-        }
-
-        function showRandomImage() {
-            if (images.length === 0) return;
-
-            let img = images[Math.floor(Math.random() * images.length)];
-            const imageBox = document.createElement("div");
-            imageBox.classList.add("image-box");
-
-            const imgElement = document.createElement("img");
-            imgElement.src = `static/images/${img}`;
-            imgElement.alt = "Brain OUT Image";
-
-            const { x, y } = getRandomPosition(imgElement);
-            imageBox.style.top = `${y}px`;
-            imageBox.style.left = `${x}px`;
-
-            imageBox.appendChild(imgElement);
-            document.body.appendChild(imageBox);
-
-            setTimeout(() => imageBox.remove(), 1500);
-        }
-
-        function showRandomWord() {
-            let word = words[Math.floor(Math.random() * words.length)];
-
-            const wordBox = document.createElement("div");
-            wordBox.classList.add("word-box");
-            wordBox.textContent = word;
-
-            const { x, y } = getRandomPosition(wordBox);
-            wordBox.style.top = `${y}px`;
-            wordBox.style.left = `${x}px`;
-
-            document.body.appendChild(wordBox);
-
-            setTimeout(() => wordBox.remove(), 1500);
-        }
-
-        fetchImages();
-    </script>
+      }, 1500);
+    }
+  </script>
 </body>
 </html>
