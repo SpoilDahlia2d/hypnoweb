@@ -64,6 +64,7 @@
       color: #ff00ff;
       text-shadow: 0 0 20px #ff00ff;
       margin-bottom: 0.5em;
+      cursor: pointer;
     }
 
     #click-sub {
@@ -119,9 +120,9 @@
   <!-- FLASH -->
   <div class="flash-overlay"></div>
 
-  <!-- INTRO -->
+  <!-- INTRO CON PULSANTE -->
   <div id="intro">
-    <div id="click-button">CLICK</div>
+    <div id="click-button" onclick="startMadness()">CLICK</div>
     <div id="click-sub">to become obsessed with DAHLIA</div>
   </div>
 
@@ -178,15 +179,11 @@
 
     function startMadness() {
       document.getElementById("intro").style.display = "none";
+      fetchImages();
       sound.play();
       setInterval(showImage, 2000);
       setInterval(showWord, 3000);
     }
-
-    setTimeout(() => {
-      fetchImages();
-      startMadness();
-    }, 3000);
   </script>
 </body>
 </html>
